@@ -2,6 +2,7 @@ import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import { Button, IconButton, Toolbar, Typography } from "@mui/material";
 import NewPoll from "./NewPoll";
+import ListPolls from "./ListPolls";
 
 export default function HomePage() {
   return (
@@ -22,6 +23,7 @@ export default function HomePage() {
         </Toolbar>
       </AppBar>
       <NewPoll />
+      <ListPolls />
     </>
   );
 }
