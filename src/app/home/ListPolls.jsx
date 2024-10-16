@@ -16,11 +16,12 @@ export default function ListPolls() {
 
   return (
     <>
-      {polls.length && (
-        <Typography variant="h1" component="h1" align="center">
-          List of Polls
-        </Typography>
-      )}
+      {polls.length &&
+        polls.map((poll) => (
+          <Typography key={poll.id} variant="h1" component="h1" align="center">
+            {poll.title}
+          </Typography>
+        ))}
     </>
   );
 }
