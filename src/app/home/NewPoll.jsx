@@ -7,13 +7,14 @@ import {
   CardHeader,
   Typography,
 } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+// import MoreVertIcon from "@mui/icons-material/MoreVert";
 import * as React from "react";
+import Link from "next/link";
 
 export default function NewPoll() {
   return (
     <>
-      <Card m={2} p={2}>
+      <Card sx={{ margin: 2, padding: 1 }}>
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: "red" }} aria-label="recipe">
@@ -30,7 +31,7 @@ export default function NewPoll() {
         </CardContent>
 
         <CardActions sx={{ justifyContent: "center" }}>
-          <Button>Create new poll</Button>
+          <Link href="/polls">Create New Poll</Link>
         </CardActions>
       </Card>
     </>
