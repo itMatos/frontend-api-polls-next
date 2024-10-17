@@ -5,9 +5,12 @@ import {
   Alert,
   Box,
   Button,
+  FormControlLabel,
+  FormGroup,
   Grid2,
   IconButton,
   Slide,
+  Switch,
   TextField,
   Toolbar,
   Typography,
@@ -17,6 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import Snackbar from "@mui/material/Snackbar";
+import * as ApiPolls from "./../../app/services/BeuniPollsApi";
 
 function SlideTransition(props) {
   return <Slide {...props} direction="up" />;
@@ -26,6 +30,7 @@ export default function CreateNewPoll() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [options, setOptions] = useState(["", ""]);
+  const [multChoice, setMultChoice] = useState(false);
   const [duplicateIndices, setDuplicateIndices] = useState([]);
   const [error, setError] = useState("");
   const [state, setState] = useState({
@@ -42,7 +47,7 @@ export default function CreateNewPoll() {
     setOptions(newOptions);
   };
 
-  const handleClick = (Transition) => () => {
+  const handleSnackBar = (Transition) => () => {
     setState({
       open: true,
       Transition,
@@ -100,31 +105,45 @@ export default function CreateNewPoll() {
     setOptions(newOptions);
   };
 
-  const handleCreatePoll = () => {
+  const handleMultChoiceSwitch = () => setMultChoice(!multChoice);
+
+  const handleCreatePoll = async () => {
     const validOptions = options.filter((option) => option);
     const validOptionsTrimmed = validOptions.map((option) => option.trim());
+    checkDuplicates(validOptionsTrimmed);
 
     if (!title) {
       setError("Title is required");
-      handleClick(SlideTransition)();
+      handleSnackBar(SlideTransition)();
       return;
     } else if (validOptions.length < 2) {
       setError("You need at least two options to create a poll");
-      handleClick(SlideTransition)();
+      handleSnackBar(SlideTransition)();
       return;
-    } else if (validOptionsTrimmed.length >= 2) {
+    } else if (duplicateIndices.length > 0) {
       setOptions(validOptionsTrimmed);
-      checkDuplicates(validOptionsTrimmed);
-      setError("You have duplicate options");
-      handleClick(SlideTransition)();
+      handleSnackBar(SlideTransition)();
+      return;
+    } else if (validOptionsTrimmed.length !== options.length) {
+      setError("You have empty options");
+      setOptions(validOptionsTrimmed);
+      handleSnackBar(SlideTransition)();
       return;
     } else {
       setError("");
       const payload = {
         title,
         description,
-        options: validOptionsTrimmed,
+        mult_choice: multChoice,
+        answer_options: validOptionsTrimmed,
       };
+      try {
+        const createPoll = await ApiPolls.createPoll(payload);
+        const { status, data } = createPoll;
+        console.log("status", status);
+      } catch (error) {
+        console.error("Error creating poll", error);
+      }
     }
   };
 
@@ -164,7 +183,7 @@ export default function CreateNewPoll() {
             />
             <TextField
               id="description-field"
-              label="Description"
+              label="Description (optional)"
               variant="outlined"
               multiline
               fullWidth
@@ -201,6 +220,7 @@ export default function CreateNewPoll() {
                 />
                 <IconButton
                   variant="contained"
+                  size="small"
                   color="error"
                   onClick={() => removeOption(index)}
                   disabled={options.length <= 2}
@@ -211,6 +231,7 @@ export default function CreateNewPoll() {
                 </IconButton>
                 <IconButton
                   variant="contained"
+                  size="small"
                   onClick={() => moveOptionUp(index)}
                   disabled={index === 0}
                 >
@@ -218,6 +239,7 @@ export default function CreateNewPoll() {
                 </IconButton>
                 <IconButton
                   variant="standard"
+                  size="small"
                   onClick={() => moveOptionDown(index)}
                   disabled={index === options.length - 1}
                 >
@@ -228,15 +250,29 @@ export default function CreateNewPoll() {
           </Grid2>
 
           <Grid2 size={{ xs: 12, sm: 6 }} sx={{ textAlign: "center" }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={addOption}
-              sx={{ mt: 2 }}
-              disabled={options.length >= 10 || duplicateIndices.length}
-            >
-              Add Option
-            </Button>
+            <Box>
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                onClick={addOption}
+                disabled={options.length >= 10 || duplicateIndices.length}
+              >
+                Add Option
+              </Button>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={multChoice}
+                      onChange={handleMultChoiceSwitch}
+                    />
+                  }
+                  label="Allow multiple choices"
+                  sx={{ alignSelf: "center" }}
+                />
+              </FormGroup>
+            </Box>
           </Grid2>
 
           <Grid2 size={{ xs: 12, sm: 6 }} sx={{ textAlign: "center", mt: 2 }}>
@@ -245,9 +281,9 @@ export default function CreateNewPoll() {
               color="primary"
               onClick={handleCreatePoll}
               sx={{ mt: 2 }}
-              disabled={duplicateIndices.length}
+              disabled={duplicateIndices.length > 0 || error.length > 0}
             >
-              Create
+              Create poll
             </Button>
           </Grid2>
 
@@ -255,7 +291,6 @@ export default function CreateNewPoll() {
             open={state.open}
             onClose={handleClose}
             TransitionComponent={state.Transition}
-            message="I love snacks"
             key={state.Transition.name}
             autoHideDuration={6000}
           >
