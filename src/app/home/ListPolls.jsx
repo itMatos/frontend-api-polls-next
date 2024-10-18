@@ -7,21 +7,101 @@ import {
     Card,
     CardContent,
     CardHeader,
-    Checkbox,
     IconButton,
     List,
     ListItem,
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    Typography,
+    Menu,
+    MenuItem,
 } from '@mui/material';
 import * as ApiPolls from '../services/BeuniPollsApi';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import CommentIcon from '@mui/icons-material/Comment';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 export default function ListPolls() {
     const [polls, setPolls] = useState([]);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleEdit = () => {
+        handleMenuClose();
+        // onEdit(poll.id);
+    };
+
+    const handleDelete = async () => {
+        // if (confirm) {
+        //     try {
+        //         ApiPolls.getPolls().then((data) => {
+        //             setPolls(data);
+        //         });
+        //     } catch (error) {
+        //         console.error('Error deleting poll', error);
+        //     } finally {
+        //         setOpenDeleteModal(false);
+        //     }
+        //     console.log('teste aqui');
+        // }
+        setOpenDeleteModal(false);
+        // handleMenuClose();
+        // setOpenDeleteModal(true);
+    };
+
+    const handleClickMenuDelete = () => {
+        handleMenuClose();
+        setOpenDeleteModal(true);
+    };
+
+    // const handleClickDeletePoll = (pollId) => {
+    //     console.log('pollId', pollId);
+    //     handleMenuClose();
+    //     setOpenDeleteModal(true);
+    //     // onDelete(poll.id);
+    //     // handleDeleteConfirm(pollId);
+    // };
+
+    // const handleCloseModal = async (confirm) => {
+    //     setOpenDeleteModal(false);
+
+    //     if (confirm) {
+    //         try {
+    //             ApiPolls.getPolls().then((data) => {
+    //                 setPolls(data);
+    //             });
+    //         } catch (error) {
+    //             console.error('Error deleting poll', error);
+    //         } finally {
+    //             setOpenDeleteModal(false);
+    //         }
+    //     }
+    // };
+
+    // const handleDeleteConfirm = (pollId) => {
+    //     try {
+    //         ApiPolls.deletePoll(pollId).then(() => {
+    //             setPolls(polls.filter((poll) => poll.id !== pollId));
+    //         });
+    //     } catch (error) {
+    //         console.error('Error deleting poll', error);
+    //     } finally {
+    //         setOpenDeleteModal(false);
+    //     }
+    // };
+
+    // const handleDeleteConfirm = () => {
+    //     Router.push('/');
+    // };
 
     useEffect(() => {
         if (!polls.length)
@@ -32,15 +112,61 @@ export default function ListPolls() {
 
     return (
         <>
-            {polls.length &&
+            {polls.length > 0 &&
                 polls.map((poll) => (
-                    <Card key={poll.id} m={2} p={2}>
+                    <Card key={poll.poll_id} m={2} p={2}>
                         <CardHeader
                             avatar={<Avatar aria-label="poll-author">R</Avatar>}
                             action={
-                                <IconButton aria-label="settings">
-                                    <MoreVertIcon />
-                                </IconButton>
+                                <>
+                                    <IconButton
+                                        aria-label="settings"
+                                        onClick={handleMenuOpen}
+                                    >
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={anchorEl}
+                                        open={Boolean(anchorEl)}
+                                        onClose={handleMenuClose}
+                                        sx={{
+                                            '& .MuiPaper-root': {
+                                                boxShadow: 'none',
+                                                border: '1px solid #ddd',
+                                                borderRadius: '8px',
+                                            },
+                                        }}
+                                    >
+                                        <MenuItem
+                                            onClick={handleEdit}
+                                            key="item-edit"
+                                        >
+                                            <ListItemIcon>
+                                                <EditIcon fontSize="small" />
+                                            </ListItemIcon>
+                                            <ListItemText>Edit</ListItemText>
+                                        </MenuItem>
+                                        <MenuItem
+                                            onClick={() =>
+                                                handleClickMenuDelete(
+                                                    poll.poll_id,
+                                                )
+                                            }
+                                            key="item-delete"
+                                        >
+                                            <ListItemIcon>
+                                                <DeleteIcon fontSize="small" />
+                                            </ListItemIcon>
+                                            <ListItemText>Delete</ListItemText>
+                                        </MenuItem>
+                                    </Menu>
+                                    <DeleteConfirmationModal
+                                        open={openDeleteModal}
+                                        handleClose={handleDelete}
+                                        setPolls={setPolls}
+                                        pollId={poll.poll_id}
+                                    />
+                                </>
                             }
                             title={poll.title}
                             subheader={poll.description}

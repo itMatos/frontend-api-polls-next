@@ -1,6 +1,6 @@
-import * as React from "react";
-import CreateNewPoll from "./CreateNewPoll";
+import * as React from 'react';
+import CreateNewPoll from './CreateNewPoll';
 
 export default function Polls() {
-  return <CreateNewPoll />;
+    return <CreateNewPoll />;
 }

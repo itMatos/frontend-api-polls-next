@@ -41,6 +41,8 @@ export default function CreateNewPoll() {
         Transition: SlideTransition,
     });
     const [createdPoll, setCreatedPoll] = useState(null);
+    // eslint-disable-next-line no-unused-vars
+    const [isFormValid, setIsFormValid] = useState(false);
 
     const handleTitle = ({ target }) => setTitle(target.value);
     const handleDescription = ({ target }) => setDescription(target.value);
@@ -64,6 +66,7 @@ export default function CreateNewPoll() {
             open: false,
         });
         setError('');
+        setSnackbarSuccessMessage('');
     };
 
     const checkDuplicates = (options) => {
@@ -111,13 +114,19 @@ export default function CreateNewPoll() {
 
     const handleMultChoiceSwitch = () => setMultChoice(!multChoice);
 
-    const handleCreatePoll = async () => {
-        const validOptions = options.filter((option) => option);
-        const validOptionsTrimmed = validOptions.map((option) => option.trim());
-        checkDuplicates(validOptionsTrimmed);
-        validOptionsTrimmed.length < 2 ? '' : setOptions(validOptionsTrimmed);
+    const handleValidateForm = () => {
+        const trimOptions = options.map((option) => option.trim());
+        const validOptions = trimOptions.filter((option) => option.length > 0);
+        checkDuplicates(validOptions);
+        validOptions.length < 2 ? null : setOptions(validOptions);
+        const trimmedTitle = title.trim();
+        setTitle(trimmedTitle);
+        setIsFormValid(false);
 
-        if (!title) {
+        setError('');
+        setSnackbarSuccessMessage('');
+
+        if (!title || !trimmedTitle) {
             setError('Title is required');
             handleSnackBar(SlideTransition)();
             return;
@@ -129,29 +138,40 @@ export default function CreateNewPoll() {
             setError('Duplicate options are not allowed');
             handleSnackBar(SlideTransition)();
             return;
-        } else if (validOptions.length !== validOptionsTrimmed.length) {
+        } else if (options.length !== validOptions.length) {
             setError('Options cannot be empty');
             handleSnackBar(SlideTransition)();
             return;
         } else {
-            setError('');
-            const payload = {
-                title,
-                description,
-                mult_choice: multChoice,
-                answer_options: validOptionsTrimmed,
-            };
-            try {
-                const createPoll = await ApiPolls.createPoll(payload);
-                const { status, data } = createPoll;
-                console.log('status', status);
-                if (status === 201) {
-                    setCreatedPoll(true);
-                    setSnackbarSuccessMessage('Poll created successfully');
-                }
-            } catch (error) {
-                console.error('Error creating poll', error);
+            setIsFormValid(true);
+            return;
+        }
+    };
+
+    useEffect(() => {
+        if (isFormValid) {
+            handleCreatePoll();
+        }
+    }, [isFormValid]);
+
+    const handleCreatePoll = async () => {
+        const payload = {
+            title,
+            description,
+            mult_choice: multChoice,
+            answer_options: options,
+        };
+        try {
+            const createPoll = await ApiPolls.createPoll(payload);
+            const { status } = createPoll;
+            console.log('status');
+            if (status === 201) {
+                setSnackbarSuccessMessage('Poll created successfully');
+                handleSnackBar(SlideTransition)();
+                setCreatedPoll(true);
             }
+        } catch (error) {
+            console.error('Error creating poll', error);
         }
     };
 
@@ -317,7 +337,7 @@ export default function CreateNewPoll() {
                         <Button
                             variant="contained"
                             color="primary"
-                            onClick={handleCreatePoll}
+                            onClick={() => handleValidateForm()}
                             sx={{ mt: 2 }}
                             disabled={
                                 duplicateIndices.length > 0 || error.length > 0
@@ -340,26 +360,28 @@ export default function CreateNewPoll() {
                             variant="filled"
                             sx={{ width: '100%' }}
                         >
-                            {error || snackbarSuccessMessage}
+                            {error}
                         </Alert>
                     </Snackbar>
 
-                    {/* <Snackbar
-                        open={state.open}
-                        onClose={handleClose}
-                        TransitionComponent={state.Transition}
-                        key={state.Transition.name}
-                        autoHideDuration={6000}
-                    >
-                        <Alert
+                    {snackbarSuccessMessage.length > 0 && (
+                        <Snackbar
+                            open={state.open}
                             onClose={handleClose}
-                            severity="success"
-                            variant="filled"
-                            sx={{ width: '100%' }}
+                            TransitionComponent={state.Transition}
+                            key="sucess-snackbar"
+                            autoHideDuration={6000}
                         >
-                            {snackbarSuccessMessage}
-                        </Alert>
-                    </Snackbar> */}
+                            <Alert
+                                onClose={handleClose}
+                                severity="success"
+                                variant="filled"
+                                sx={{ width: '100%' }}
+                            >
+                                {snackbarSuccessMessage}
+                            </Alert>
+                        </Snackbar>
+                    )}
                 </Box>
             </Grid2>
         </>

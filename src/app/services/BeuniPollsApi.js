@@ -9,3 +9,7 @@ export async function createPoll(payloadPoll) {
     const response = await BeuniPollsApiClient.post('/polls', payloadPoll);
     return response;
 }
+export async function deletePoll(pollId) {
+    const response = await BeuniPollsApiClient.delete(`/polls/${pollId}`);
+    return response;
+}
