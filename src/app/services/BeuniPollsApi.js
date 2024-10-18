@@ -26,3 +26,8 @@ export async function updatePoll(pollId, payloadPoll) {
     );
     return response;
 }
+
+export async function votePoll(payloadVote) {
+    const response = await BeuniPollsApiClient.post('/votes', payloadVote);
+    return response;
+}

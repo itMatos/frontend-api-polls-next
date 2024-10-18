@@ -3,14 +3,9 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import {
     Avatar,
-    Button,
     Card,
-    CardContent,
     CardHeader,
     IconButton,
-    List,
-    ListItem,
-    ListItemButton,
     ListItemIcon,
     ListItemText,
     Menu,
@@ -22,6 +17,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import { useRouter } from 'next/router';
+import PollVoting from './PollVoting';
 
 export default function ListPolls() {
     const [polls, setPolls] = useState([]);
@@ -53,10 +49,11 @@ export default function ListPolls() {
     };
 
     useEffect(() => {
-        if (!polls.length)
+        if (!polls.length) {
             ApiPolls.getPolls().then((data) => {
                 setPolls(data);
             });
+        }
     }, [polls.length]);
 
     useEffect(() => {
@@ -131,34 +128,7 @@ export default function ListPolls() {
                             title={poll.title}
                             subheader={poll.description}
                         />
-
-                        <CardContent>
-                            <List>
-                                {poll.answerOptions?.map((answerOption) => (
-                                    <ListItem key={answerOption} disablePadding>
-                                        <ListItemButton
-                                            role={undefined}
-                                            // onClick={handleToggle(value)}
-                                            dense
-                                        >
-                                            {/* <ListItemIcon>
-                <Checkbox
-                  edge="start"
-                //   checked={checked.includes(value)}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ 'aria-labelledby': answerOption }}
-                />
-              </ListItemIcon> */}
-                                            {/* <ListItemText id={answerOption} primary={`${answerOption}`} /> */}
-                                            <Button id={answerOption}>
-                                                {answerOption}
-                                            </Button>
-                                        </ListItemButton>
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </CardContent>
+                        <PollVoting poll={poll} />
                     </Card>
                 ))}
         </>

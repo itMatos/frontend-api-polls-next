@@ -31,12 +31,7 @@ export default function DeleteConfirmationModal({
         }
     };
     return (
-        <Dialog
-            open={open}
-            onClose={() => handleClose(false)}
-            aria-labelledby="confirm-delete-title"
-            aria-describedby="confirm-delete-description"
-        >
+        <Dialog open={open} onClose={() => handleClose(false)}>
             <DialogTitle id="confirm-delete-title">
                 Confirm Deletion
             </DialogTitle>
