@@ -31,3 +31,10 @@ export async function votePoll(payloadVote) {
     const response = await BeuniPollsApiClient.post('/votes', payloadVote);
     return response;
 }
+
+export async function getUserVotedPolls(userId) {
+    const response = await BeuniPollsApiClient.get(
+        `/votes/user-voted-polls/${userId}`,
+    );
+    return response.data;
+}

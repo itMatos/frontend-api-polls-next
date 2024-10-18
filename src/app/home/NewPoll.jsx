@@ -1,27 +1,40 @@
+'use client';
+import React, { useEffect, useState } from 'react';
 import {
     Avatar,
+    Button,
     Card,
     CardActions,
     CardContent,
     CardHeader,
     Typography,
 } from '@mui/material';
+import { useRouter } from 'next/router';
 // import MoreVertIcon from "@mui/icons-material/MoreVert";
-import * as React from 'react';
-import Link from 'next/link';
 
 export default function NewPoll() {
+    const [clickNewPoll, setClickNewPoll] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (clickNewPoll) {
+            router.push('/polls');
+        }
+    }, [clickNewPoll]);
+
     return (
         <>
-            <Card sx={{ margin: 2, padding: 1 }}>
+            <Card sx={{ mb: 2 }}>
                 <CardHeader
                     avatar={
                         <Avatar sx={{ bgcolor: 'red' }} aria-label="recipe">
                             R
                         </Avatar>
                     }
-                    title="Add a new Poll"
-                    subheader="Create a new poll easily"
+                    title={
+                        <Typography variant="h5">Create New Poll</Typography>
+                    }
+                    subheader="Let's go!"
                 />
                 <CardContent>
                     <Typography
@@ -34,7 +47,13 @@ export default function NewPoll() {
                 </CardContent>
 
                 <CardActions sx={{ justifyContent: 'center' }}>
-                    <Link href="/polls">Create New Poll</Link>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setClickNewPoll(true)}
+                    >
+                        Create New Poll
+                    </Button>
                 </CardActions>
             </Card>
         </>

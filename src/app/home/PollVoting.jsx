@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     CardContent,
     List,
@@ -7,12 +7,30 @@ import {
     ListItemButton,
     Button,
     Checkbox,
+    Grid2,
 } from '@mui/material';
 import * as ApiPolls from '../services/BeuniPollsApi';
+import CheckIcon from '@mui/icons-material/Check';
 
-export default function PollVoting({ poll }) {
+export default function PollVoting({
+    poll,
+    userVotesForPoll = [],
+    handleUpdatePolls,
+}) {
     const [selectedAnswers, setSelectedAnswers] = useState([]);
     const userId = 'e404e76b-7162-4109-b4e2-e92085b97d9e';
+    const [userVotes, setUserVotes] = useState(userVotesForPoll);
+
+    useEffect(() => {
+        if (userVotesForPoll.length > 0) {
+            setSelectedAnswers(userVotesForPoll.map((vote) => vote.answer));
+        }
+    }, [userVotesForPoll]);
+
+    const fetchUserVotes = async () => {
+        const votes = await ApiPolls.getUserVotedPolls(userId);
+        setUserVotes(votes);
+    };
 
     const handleToggle = (answerOption) => {
         if (poll.mult_choice) {
@@ -32,15 +50,7 @@ export default function PollVoting({ poll }) {
     };
 
     const handleSubmitVote = async () => {
-        console.log('poll', poll);
-        const paylaod = {
-            poll_id: poll.poll_id,
-            user_id: userId,
-            answer: selectedAnswers[0],
-        };
-        console.log('payload', paylaod);
         try {
-            console.log('poll', poll);
             if (poll.mult_choice) {
                 for (const answer of selectedAnswers) {
                     await ApiPolls.votePoll({
@@ -58,11 +68,16 @@ export default function PollVoting({ poll }) {
                     });
                 }
             }
-            alert('Votação enviada com sucesso!');
+            fetchUserVotes();
+            handleUpdatePolls();
         } catch (error) {
-            alert('Erro ao enviar votação.');
+            console.log('Erro ao enviar votação.');
         }
     };
+
+    useEffect(() => {
+        setUserVotes(userVotesForPoll);
+    }, [userVotesForPoll]);
 
     return (
         <CardContent>
@@ -78,6 +93,7 @@ export default function PollVoting({ poll }) {
                         <ListItemButton
                             role={undefined}
                             onClick={() => handleToggle(answerOption)}
+                            disabled={userVotes.length > 0}
                             dense
                         >
                             <Checkbox
@@ -94,14 +110,20 @@ export default function PollVoting({ poll }) {
                     </ListItem>
                 ))}
             </List>
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSubmitVote}
-                disabled={selectedAnswers.length === 0}
-            >
-                Vote
-            </Button>
+            <Grid2 sx={{ textAlign: 'center' }}>
+                <Button
+                    variant={userVotes.length > 0 ? 'outlined' : 'contained'}
+                    size={userVotes.length > 0 ? 'small' : 'large'}
+                    color={userVotes.length > 0 ? 'success' : 'primary'}
+                    onClick={userVotes.length > 0 ? null : handleSubmitVote}
+                    disableRipple
+                    startIcon={userVotes.length > 0 && <CheckIcon />}
+                >
+                    {userVotes.length > 0
+                        ? 'You already voted this poll'
+                        : 'Vote'}
+                </Button>
+            </Grid2>
         </CardContent>
     );
 }
