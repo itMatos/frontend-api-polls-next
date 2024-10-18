@@ -1,33 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
-import AppBar from '@mui/material/AppBar';
-import {
-    Alert,
-    Box,
-    Button,
-    FormControlLabel,
-    FormGroup,
-    Grid2,
-    IconButton,
-    Slide,
-    Switch,
-    TextField,
-    Toolbar,
-    Typography,
-} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { Alert, Button, Grid2, Slide, Typography } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import * as ApiPolls from './../../app/services/BeuniPollsApi';
 import { useRouter } from 'next/router';
+import PollToolbar from './PollToolbar';
+import PollForm from './PollForm';
 
 function SlideTransition(props) {
     return <Slide {...props} direction="up" />;
 }
 
-export default function CreateNewPoll() {
+export default function PollMaker({ isEditing = false, pollIdToEdit = null }) {
     const router = useRouter();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -35,17 +19,18 @@ export default function CreateNewPoll() {
     const [multChoice, setMultChoice] = useState(false);
     const [duplicateIndices, setDuplicateIndices] = useState([]);
     const [error, setError] = useState('');
-    const [snackbarSuccessMessage, setSnackbarSuccessMessage] = useState('');
     const [state, setState] = useState({
         open: false,
         Transition: SlideTransition,
     });
     const [createdPoll, setCreatedPoll] = useState(null);
-    // eslint-disable-next-line no-unused-vars
     const [isFormValid, setIsFormValid] = useState(false);
+    const [hasError, setHasError] = useState(false);
+    const [payloadToCompare, setPayloadToCompare] = useState(null);
 
-    const handleTitle = ({ target }) => setTitle(target.value);
-    const handleDescription = ({ target }) => setDescription(target.value);
+    const handleTitleChange = ({ target }) => setTitle(target.value);
+    const handleDescriptionChange = ({ target }) =>
+        setDescription(target.value);
 
     const addOption = () => {
         const newOptions = [...options, ''];
@@ -53,20 +38,19 @@ export default function CreateNewPoll() {
         setOptions(newOptions);
     };
 
-    const handleSnackBar = (Transition) => () => {
+    const handleShowSnackBar = (Transition) => () => {
         setState({
             open: true,
             Transition,
         });
     };
 
-    const handleClose = () => {
+    const handleCloseSnackbar = () => {
         setState({
             ...state,
             open: false,
         });
         setError('');
-        setSnackbarSuccessMessage('');
     };
 
     const checkDuplicates = (options) => {
@@ -112,7 +96,7 @@ export default function CreateNewPoll() {
         setOptions(newOptions);
     };
 
-    const handleMultChoiceSwitch = () => setMultChoice(!multChoice);
+    const handleMultChoiceToggle = () => setMultChoice(!multChoice);
 
     const handleValidateForm = () => {
         const trimOptions = options.map((option) => option.trim());
@@ -124,35 +108,31 @@ export default function CreateNewPoll() {
         setIsFormValid(false);
 
         setError('');
-        setSnackbarSuccessMessage('');
 
         if (!title || !trimmedTitle) {
             setError('Title is required');
-            handleSnackBar(SlideTransition)();
+            handleShowSnackBar(SlideTransition)();
+            setHasError(true);
             return;
         } else if (validOptions.length < 2) {
             setError('You need at least two options to create a poll');
-            handleSnackBar(SlideTransition)();
+            handleShowSnackBar(SlideTransition)();
+            setHasError(true);
             return;
         } else if (duplicateIndices.length > 0) {
             setError('Duplicate options are not allowed');
-            handleSnackBar(SlideTransition)();
+            handleShowSnackBar(SlideTransition)();
+            setHasError(true);
             return;
         } else if (options.length !== validOptions.length) {
             setError('Options cannot be empty');
-            handleSnackBar(SlideTransition)();
+            handleShowSnackBar(SlideTransition)();
             return;
         } else {
             setIsFormValid(true);
             return;
         }
     };
-
-    useEffect(() => {
-        if (isFormValid) {
-            handleCreatePoll();
-        }
-    }, [isFormValid]);
 
     const handleCreatePoll = async () => {
         const payload = {
@@ -164,16 +144,43 @@ export default function CreateNewPoll() {
         try {
             const createPoll = await ApiPolls.createPoll(payload);
             const { status } = createPoll;
-            console.log('status');
             if (status === 201) {
-                setSnackbarSuccessMessage('Poll created successfully');
-                handleSnackBar(SlideTransition)();
                 setCreatedPoll(true);
             }
         } catch (error) {
-            console.error('Error creating poll', error);
+            setError('Error creating poll');
+            handleShowSnackBar(SlideTransition)();
         }
     };
+
+    const handleUpdatePoll = async () => {
+        const payload = {};
+        if (description !== payloadToCompare?.description) {
+            payload.description = description;
+        }
+        if (title !== payloadToCompare?.title) {
+            payload.title = title;
+        }
+        if (options !== payloadToCompare?.answerOptions) {
+            payload.answerOptions = options;
+        }
+        try {
+            const updatePoll = await ApiPolls.updatePoll(pollIdToEdit, payload);
+            const { status } = updatePoll;
+            if (status === 200) {
+                setCreatedPoll(true);
+            }
+        } catch (error) {
+            setError('Error updating poll');
+            handleShowSnackBar(SlideTransition)();
+        }
+    };
+
+    useEffect(() => {
+        if (isFormValid) {
+            isEditing ? handleUpdatePoll() : handleCreatePoll();
+        }
+    }, [isFormValid]);
 
     useEffect(() => {
         if (createdPoll) {
@@ -181,209 +188,62 @@ export default function CreateNewPoll() {
         }
     }, [createdPoll, router]);
 
+    useEffect(() => {
+        if (isEditing && pollIdToEdit) {
+            ApiPolls.getPollById(pollIdToEdit).then((data) => {
+                setPayloadToCompare(data);
+                setTitle(data.title);
+                setDescription(data.description);
+                setOptions(data.answerOptions);
+                setMultChoice(data.mult_choice);
+            });
+        }
+    }, [pollIdToEdit, isEditing]);
+
     return (
         <>
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        sx={{ mr: 2 }}
-                    >
-                        <ArrowBackIcon />
-                    </IconButton>
-                    <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{ flexGrow: 1 }}
-                    >
-                        Create New Poll
-                    </Typography>
-                    <Button color="inherit">Login</Button>
-                </Toolbar>
-            </AppBar>
+            <PollToolbar barName={isEditing ? 'Edit Poll' : 'Create Poll'} />
+            <Typography variant="h4" align="center" gutterBottom>
+                {isEditing ? 'Edit Poll' : 'Create Poll'}
+            </Typography>
 
-            <Grid2 container spacing={2}>
-                <Box sx={{ p: 2 }}>
-                    <Grid2 size={{ sm: 12 }}>
-                        <TextField
-                            id="title-field"
-                            label="Title"
-                            variant="outlined"
-                            multiline
-                            error={error.length > 0 && !title}
-                            fullWidth
-                            value={title}
-                            onChange={handleTitle}
-                            sx={{ mb: 2 }}
-                        />
-                        <TextField
-                            id="description-field"
-                            label="Description (optional)"
-                            variant="outlined"
-                            multiline
-                            fullWidth
-                            value={description}
-                            onChange={handleDescription}
-                            sx={{ mb: 2 }}
-                        />
-                    </Grid2>
-
-                    <Grid2 size={{ xs: 12, sm: 12 }}>
-                        {options.map((option, index) => (
-                            <Box
-                                key={index}
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    mb: 2,
-                                    flex: 1,
-                                }}
-                            >
-                                <TextField
-                                    id={`option-${index}`}
-                                    label={`Option ${index + 1}`}
-                                    variant="standard"
-                                    multiline
-                                    fullWidth
-                                    value={option}
-                                    onChange={(e) =>
-                                        handleOptionChange(
-                                            index,
-                                            e.target.value,
-                                        )
-                                    }
-                                    sx={{ mr: 2 }}
-                                    error={duplicateIndices.includes(index)}
-                                    helperText={
-                                        duplicateIndices.includes(index)
-                                            ? 'Duplicate option'
-                                            : ''
-                                    }
-                                />
-                                <IconButton
-                                    variant="contained"
-                                    size="small"
-                                    color="error"
-                                    onClick={() => removeOption(index)}
-                                    disabled={options.length <= 2}
-                                >
-                                    <DeleteIcon
-                                        color={
-                                            options.length <= 2
-                                                ? 'disabled'
-                                                : 'error'
-                                        }
-                                    />
-                                </IconButton>
-                                <IconButton
-                                    variant="contained"
-                                    size="small"
-                                    onClick={() => moveOptionUp(index)}
-                                    disabled={index === 0}
-                                >
-                                    <ArrowUpwardIcon />
-                                </IconButton>
-                                <IconButton
-                                    variant="standard"
-                                    size="small"
-                                    onClick={() => moveOptionDown(index)}
-                                    disabled={index === options.length - 1}
-                                >
-                                    <ArrowDownwardIcon />
-                                </IconButton>
-                            </Box>
-                        ))}
-                    </Grid2>
-
-                    <Grid2
-                        size={{ xs: 12, sm: 6 }}
-                        sx={{ textAlign: 'center' }}
-                    >
-                        <Box>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                onClick={addOption}
-                                disabled={
-                                    options.length >= 10 ||
-                                    duplicateIndices.length > 0
-                                }
-                            >
-                                Add Option
-                            </Button>
-                            <FormGroup>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={multChoice}
-                                            onChange={handleMultChoiceSwitch}
-                                        />
-                                    }
-                                    label="Allow multiple choices"
-                                    sx={{ alignSelf: 'center' }}
-                                />
-                            </FormGroup>
-                        </Box>
-                    </Grid2>
-
-                    <Grid2
-                        size={{ xs: 12, sm: 6 }}
-                        sx={{ textAlign: 'center', mt: 2 }}
-                    >
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => handleValidateForm()}
-                            sx={{ mt: 2 }}
-                            disabled={
-                                duplicateIndices.length > 0 || error.length > 0
-                            }
-                        >
-                            Create poll
-                        </Button>
-                    </Grid2>
-
-                    <Snackbar
-                        open={state.open}
-                        onClose={handleClose}
-                        TransitionComponent={state.Transition}
-                        key={state.Transition.name}
-                        autoHideDuration={6000}
-                    >
-                        <Alert
-                            onClose={handleClose}
-                            severity="error"
-                            variant="filled"
-                            sx={{ width: '100%' }}
-                        >
-                            {error}
-                        </Alert>
-                    </Snackbar>
-
-                    {snackbarSuccessMessage.length > 0 && (
-                        <Snackbar
-                            open={state.open}
-                            onClose={handleClose}
-                            TransitionComponent={state.Transition}
-                            key="sucess-snackbar"
-                            autoHideDuration={6000}
-                        >
-                            <Alert
-                                onClose={handleClose}
-                                severity="success"
-                                variant="filled"
-                                sx={{ width: '100%' }}
-                            >
-                                {snackbarSuccessMessage}
-                            </Alert>
-                        </Snackbar>
-                    )}
-                </Box>
+            <PollForm
+                title={title}
+                description={description}
+                options={options}
+                multChoice={multChoice}
+                onTitleChange={handleTitleChange}
+                onDescriptionChange={handleDescriptionChange}
+                onOptionChange={handleOptionChange}
+                onOptionRemove={removeOption}
+                onOptionAdd={addOption}
+                onMoveOptionUp={moveOptionUp}
+                onMoveOptionDown={moveOptionDown}
+                onMultChoiceToggle={handleMultChoiceToggle}
+                canAddOption={options.length < 10}
+                duplicateIndices={duplicateIndices}
+                hasError={hasError}
+                isEditing={isEditing}
+            />
+            <Grid2 sx={{ textAlign: 'center', mt: 2 }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleValidateForm}
+                >
+                    {isEditing ? 'Save Poll' : 'Create Poll'}
+                </Button>
             </Grid2>
+            <Snackbar
+                open={!!error}
+                onClose={handleCloseSnackbar}
+                autoHideDuration={6000}
+                sx={{ justifyContent: 'center' }}
+            >
+                <Alert severity="error" variant="filled">
+                    {error}
+                </Alert>
+            </Snackbar>
         </>
     );
 }

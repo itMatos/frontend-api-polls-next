@@ -21,11 +21,14 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import { useRouter } from 'next/router';
 
 export default function ListPolls() {
     const [polls, setPolls] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [pollIdToEdit, setPollIdToEdit] = useState('');
+    const router = useRouter();
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -35,27 +38,13 @@ export default function ListPolls() {
         setAnchorEl(null);
     };
 
-    const handleEdit = () => {
+    const handleClickEditPoll = (pollId) => {
         handleMenuClose();
-        // onEdit(poll.id);
+        setPollIdToEdit(pollId);
     };
 
     const handleDelete = async () => {
-        // if (confirm) {
-        //     try {
-        //         ApiPolls.getPolls().then((data) => {
-        //             setPolls(data);
-        //         });
-        //     } catch (error) {
-        //         console.error('Error deleting poll', error);
-        //     } finally {
-        //         setOpenDeleteModal(false);
-        //     }
-        //     console.log('teste aqui');
-        // }
         setOpenDeleteModal(false);
-        // handleMenuClose();
-        // setOpenDeleteModal(true);
     };
 
     const handleClickMenuDelete = () => {
@@ -63,52 +52,18 @@ export default function ListPolls() {
         setOpenDeleteModal(true);
     };
 
-    // const handleClickDeletePoll = (pollId) => {
-    //     console.log('pollId', pollId);
-    //     handleMenuClose();
-    //     setOpenDeleteModal(true);
-    //     // onDelete(poll.id);
-    //     // handleDeleteConfirm(pollId);
-    // };
-
-    // const handleCloseModal = async (confirm) => {
-    //     setOpenDeleteModal(false);
-
-    //     if (confirm) {
-    //         try {
-    //             ApiPolls.getPolls().then((data) => {
-    //                 setPolls(data);
-    //             });
-    //         } catch (error) {
-    //             console.error('Error deleting poll', error);
-    //         } finally {
-    //             setOpenDeleteModal(false);
-    //         }
-    //     }
-    // };
-
-    // const handleDeleteConfirm = (pollId) => {
-    //     try {
-    //         ApiPolls.deletePoll(pollId).then(() => {
-    //             setPolls(polls.filter((poll) => poll.id !== pollId));
-    //         });
-    //     } catch (error) {
-    //         console.error('Error deleting poll', error);
-    //     } finally {
-    //         setOpenDeleteModal(false);
-    //     }
-    // };
-
-    // const handleDeleteConfirm = () => {
-    //     Router.push('/');
-    // };
-
     useEffect(() => {
         if (!polls.length)
             ApiPolls.getPolls().then((data) => {
                 setPolls(data);
             });
     }, [polls.length]);
+
+    useEffect(() => {
+        if (pollIdToEdit) {
+            router.push(`/polls/${pollIdToEdit}`);
+        }
+    }, [pollIdToEdit, router]);
 
     return (
         <>
@@ -138,12 +93,17 @@ export default function ListPolls() {
                                         }}
                                     >
                                         <MenuItem
-                                            onClick={handleEdit}
+                                            onClick={() =>
+                                                handleClickEditPoll(
+                                                    poll.poll_id,
+                                                )
+                                            }
                                             key="item-edit"
                                         >
                                             <ListItemIcon>
                                                 <EditIcon fontSize="small" />
                                             </ListItemIcon>
+
                                             <ListItemText>Edit</ListItemText>
                                         </MenuItem>
                                         <MenuItem
