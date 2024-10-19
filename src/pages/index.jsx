@@ -1,6 +1,20 @@
-import * as React from 'react';
-import HomePage from '../app/home/page';
+'use client';
+import React from 'react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+// import LoginPage from './login/LoginPage';
+import Login from './login';
 
-export default function Home() {
-    return <HomePage />;
+export default function Page() {
+    return (
+        <>
+            <GoogleOAuthProvider
+                // eslint-disable-next-line no-undef
+                clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+            >
+                <>
+                    <Login />
+                </>
+            </GoogleOAuthProvider>
+        </>
+    );
 }

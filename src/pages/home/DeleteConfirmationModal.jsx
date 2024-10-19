@@ -9,7 +9,7 @@ import {
     DialogTitle,
     Button,
 } from '@mui/material';
-import * as ApiPolls from '../services/BeuniPollsApi';
+import * as ApiPolls from '../../app/services/BeuniPollsApi';
 
 export default function DeleteConfirmationModal({
     open,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Button } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function PollToolbar({ barName }) {
@@ -20,7 +20,7 @@ function PollToolbar({ barName }) {
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                     {barName}
                 </Typography>
-                <Button color="inherit">Login</Button>
+                {/* <Button color="inherit">Login</Button> */}
             </Toolbar>
         </AppBar>
     );

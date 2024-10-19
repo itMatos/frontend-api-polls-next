@@ -38,3 +38,13 @@ export async function getUserVotedPolls(userId) {
     );
     return response.data;
 }
+
+export async function getUserInfoByEmail(email) {
+    const response = await BeuniPollsApiClient.get(`/users/email/${email}`);
+    return response.data;
+}
+
+export async function createUser(payload) {
+    const response = await BeuniPollsApiClient.post('/users', payload);
+    return response;
+}
