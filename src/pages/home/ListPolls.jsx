@@ -112,6 +112,7 @@ export default function ListPolls() {
                                 openDeleteModal={openDeleteModal}
                                 handleDelete={handleDelete}
                                 handleClickEditPoll={handleClickEditPoll}
+                                userId={userId}
                             />
                         );
                     })}
