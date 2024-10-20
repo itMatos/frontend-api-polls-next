@@ -12,7 +12,7 @@ import Image from 'next/image';
 
 function LoginPage() {
     const { userName, setUserName } = useContext(User_Data);
-    const { setUserEmail } = useContext(User_Data);
+    const { userEmail, setUserEmail } = useContext(User_Data);
     const { setUserId } = useContext(User_Data);
     const { setIsLoggedIn } = useContext(User_Data);
 
@@ -39,37 +39,43 @@ function LoginPage() {
                     },
                 )
                 .then((res) => {
+                    setUserName(res?.data?.name);
+                    setUserEmail(res?.data?.email);
                     handleNavigation(res?.data?.email);
                 })
                 .catch((err) => console.log(err));
         }
     }, [user]);
 
-    const handleNavigation = async (email) => {
-        if (email) {
-            const userExists = await ApiPolls.getUserInfoByEmail(email);
-            if (userExists.user_id) {
-                setUserId(userExists.user_id);
-                setUserName(userExists.name);
-                setUserEmail(userExists.email);
-                setIsLoggedIn(true);
-                router.push('/home');
-                console.log('userExists', userExists);
-            } else {
-                const newUser = await ApiPolls.createUser({
-                    email: email,
-                    name: userName,
-                });
-                console.log('newUser', newUser);
-                if (newUser) {
-                    const newUserInfo =
-                        await ApiPolls.getUserInfoByEmail(email);
-                    setUserId(newUserInfo.user_id);
-                }
-                router.push('/home');
-            }
-        }
+    const handleNavigation = () => {
+        router.push('/home');
     };
+
+    useEffect(() => {
+        if (userName && userEmail) {
+            ApiPolls.getUserInfoByEmail(userEmail).then((userExists) => {
+                if (userExists.user_id) {
+                    setUserId(userExists.user_id);
+                    setIsLoggedIn(true);
+                    handleNavigation();
+                } else {
+                    ApiPolls.createUser({
+                        email: userEmail,
+                        name: userName,
+                    }).then((newUser) => {
+                        if (newUser) {
+                            ApiPolls.getUserInfoByEmail(userEmail).then(
+                                (newUserInfo) => {
+                                    setUserId(newUserInfo.user_id);
+                                    handleNavigation();
+                                },
+                            );
+                        }
+                    });
+                }
+            });
+        }
+    }, [userName, userEmail]);
 
     return (
         <Container
