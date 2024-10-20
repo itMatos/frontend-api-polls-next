@@ -18,12 +18,7 @@ function SlideTransition(props) {
     return <Slide {...props} direction="up" />;
 }
 
-export default function PollMaker({
-    userId,
-    name,
-    isEditing = false,
-    pollIdToEdit = null,
-}) {
+export default function PollMaker({ isEditing = false, pollIdToEdit = null }) {
     const router = useRouter();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -196,14 +191,7 @@ export default function PollMaker({
 
     useEffect(() => {
         if (createdPoll) {
-            router.push({
-                pathname: '/home',
-                query: {
-                    userId,
-                    name,
-                },
-                as: '/home',
-            });
+            router.push('/home');
         }
     }, [createdPoll, router]);
 

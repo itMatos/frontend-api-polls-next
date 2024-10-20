@@ -9,27 +9,12 @@ import {
     DialogTitle,
     Button,
 } from '@mui/material';
-import * as ApiPolls from '../../app/services/BeuniPollsApi';
 
 export default function DeleteConfirmationModal({
     open,
     handleClose,
-    setPolls,
-    pollId,
+    handleConfirmDeletePoll,
 }) {
-    const handleConfirmDeletePoll = () => {
-        try {
-            ApiPolls.deletePoll(pollId).then(() => {
-                ApiPolls.getPolls().then((data) => {
-                    setPolls(data);
-                });
-            });
-        } catch (error) {
-            console.error('Error deleting poll', error);
-        } finally {
-            handleClose(true);
-        }
-    };
     return (
         <Dialog open={open} onClose={() => handleClose(false)}>
             <DialogTitle id="confirm-delete-title">
@@ -51,7 +36,7 @@ export default function DeleteConfirmationModal({
                     Cancel
                 </Button>
                 <Button
-                    onClick={() => handleConfirmDeletePoll()}
+                    onClick={() => handleConfirmDeletePoll(true)}
                     color="error"
                     variant="contained"
                 >

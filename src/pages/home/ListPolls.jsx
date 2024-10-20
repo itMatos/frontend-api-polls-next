@@ -113,6 +113,7 @@ export default function ListPolls() {
                                 handleDelete={handleDelete}
                                 handleClickEditPoll={handleClickEditPoll}
                                 userId={userId}
+                                setPolls={setPolls}
                             />
                         );
                     })}

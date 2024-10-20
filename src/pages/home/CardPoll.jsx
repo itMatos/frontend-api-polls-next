@@ -1,3 +1,4 @@
+'use client';
 import {
     Avatar,
     Card,
@@ -16,6 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import getRandomColor from '../../app/colors/RandomColor';
 import EditIcon from '@mui/icons-material/Edit';
+import * as ApiPolls from '../../app/services/BeuniPollsApi';
 
 export default function CardPoll({
     poll,
@@ -46,6 +48,15 @@ export default function CardPoll({
     const [randomColor] = useState(getRandomColor());
 
     const userVotesForPoll = getUserVotesForPoll(poll.poll_id);
+
+    const handleConfirmDeletePoll = () => {
+        ApiPolls.deletePoll(poll.poll_id).then(() => {
+            ApiPolls.getPolls().then((data) => {
+                setPolls(data);
+                handleDelete(false);
+            });
+        });
+    };
 
     return (
         <Grid2
@@ -118,8 +129,8 @@ export default function CardPoll({
                                 </MenuItem>
                                 <MenuItem
                                     onClick={() => {
-                                        handleMenuClose();
                                         handleClickMenuDelete(poll.poll_id);
+                                        handleMenuClose();
                                     }}
                                     key="item-delete"
                                 >
@@ -132,8 +143,10 @@ export default function CardPoll({
                             <DeleteConfirmationModal
                                 open={openDeleteModal}
                                 handleClose={handleDelete}
-                                setPolls={setPolls}
                                 pollId={poll.poll_id}
+                                handleConfirmDeletePoll={
+                                    handleConfirmDeletePoll
+                                }
                             />
                         </>
                     }
