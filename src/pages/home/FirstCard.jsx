@@ -1,5 +1,5 @@
 'use client';
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import {
     Avatar,
     Button,
@@ -12,10 +12,12 @@ import {
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import { User_Data } from '../../context/UserContext';
+import getRandomColor from '../../app/colors/RandomColor';
 
 export default function NewPoll() {
     const router = useRouter();
     const { userName } = useContext(User_Data);
+    const randomColor = useMemo(getRandomColor);
 
     return (
         <Grid2 container justifyContent="center" sx={{ my: 4 }}>
@@ -23,7 +25,10 @@ export default function NewPoll() {
                 <Card sx={{ mb: 2 }}>
                     <CardHeader
                         avatar={
-                            <Avatar sx={{ bgcolor: 'red' }} aria-label="recipe">
+                            <Avatar
+                                sx={{ bgcolor: randomColor }}
+                                aria-label="recipe"
+                            >
                                 {userName ? userName[0] : 'U'}
                             </Avatar>
                         }

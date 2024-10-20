@@ -7,6 +7,8 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useRouter } from 'next/router';
 import * as ApiPolls from '../app/services/BeuniPollsApi';
 import { User_Data } from '../context/UserContext';
+import brandImage from './../app/img/image.png';
+import Image from 'next/image';
 
 function LoginPage() {
     const { userName, setUserName } = useContext(User_Data);
@@ -70,24 +72,52 @@ function LoginPage() {
     };
 
     return (
-        <Container component="main" maxWidth="xs">
+        <Container
+            component="main"
+            maxWidth="md"
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '100vh',
+            }}
+        >
             <Paper elevation={3} sx={{ padding: 3 }}>
                 <Box
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
+                        width: '100%',
                     }}
                 >
-                    <Typography variant="h5">Welcome to Beuni Polls</Typography>
+                    <Image
+                        src={brandImage}
+                        width="50px"
+                        height="50px"
+                        alt="Brand Logo"
+                    />
+
+                    <Typography variant="h5" align="center" mt={2}>
+                        Welcome to Beuni Polls!
+                    </Typography>
                     <Box sx={{ mt: 2 }}>
                         <Button
                             fullWidth
                             variant="contained"
                             color="primary"
-                            sx={{ mt: 2 }}
+                            size="large"
                             startIcon={<GoogleIcon />}
-                            onClick={() => login()}
+                            onClick={login}
+                            sx={{
+                                borderRadius: 2,
+                                backgroundColor: '#ff6200',
+                                mt: 2,
+                                '&:hover': {
+                                    backgroundColor: '#ef6c00',
+                                },
+                            }}
                         >
                             Sign in with Google
                         </Button>

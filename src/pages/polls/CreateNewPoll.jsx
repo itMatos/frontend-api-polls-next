@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
-import { Alert, Button, Grid2, Slide, Typography } from '@mui/material';
+import {
+    Alert,
+    Button,
+    Container,
+    Grid2,
+    Slide,
+    Typography,
+} from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import * as ApiPolls from './../../app/services/BeuniPollsApi';
 import { useRouter } from 'next/router';
@@ -215,47 +222,51 @@ export default function PollMaker({
     return (
         <>
             <PollToolbar barName={isEditing ? 'Edit Poll' : 'Create Poll'} />
-            <Typography variant="h4" align="center" gutterBottom>
-                {isEditing ? 'Edit Poll' : 'Create Poll'}
-            </Typography>
+            <Container maxWidth="md" sx={{ padding: '16px' }}>
+                <Typography variant="h4" align="center" gutterBottom mt={2}>
+                    {isEditing ? 'Edit Poll' : 'Create Poll'}
+                </Typography>
 
-            <PollForm
-                title={title}
-                description={description}
-                options={options}
-                multChoice={multChoice}
-                onTitleChange={handleTitleChange}
-                onDescriptionChange={handleDescriptionChange}
-                onOptionChange={handleOptionChange}
-                onOptionRemove={removeOption}
-                onOptionAdd={addOption}
-                onMoveOptionUp={moveOptionUp}
-                onMoveOptionDown={moveOptionDown}
-                onMultChoiceToggle={handleMultChoiceToggle}
-                canAddOption={options.length < 10}
-                duplicateIndices={duplicateIndices}
-                hasError={hasError}
-                isEditing={isEditing}
-            />
-            <Grid2 sx={{ textAlign: 'center', mt: 2 }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleValidateForm}
+                <PollForm
+                    title={title}
+                    description={description}
+                    options={options}
+                    multChoice={multChoice}
+                    onTitleChange={handleTitleChange}
+                    onDescriptionChange={handleDescriptionChange}
+                    onOptionChange={handleOptionChange}
+                    onOptionRemove={removeOption}
+                    onOptionAdd={addOption}
+                    onMoveOptionUp={moveOptionUp}
+                    onMoveOptionDown={moveOptionDown}
+                    onMultChoiceToggle={handleMultChoiceToggle}
+                    canAddOption={options.length < 10}
+                    duplicateIndices={duplicateIndices}
+                    hasError={hasError}
+                    isEditing={isEditing}
+                />
+
+                <Grid2 container justifyContent="center" mt={2}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleValidateForm}
+                    >
+                        {isEditing ? 'Save Poll' : 'Create Poll'}
+                    </Button>
+                </Grid2>
+
+                <Snackbar
+                    open={!!error}
+                    onClose={handleCloseSnackbar}
+                    autoHideDuration={6000}
+                    sx={{ justifyContent: 'center' }}
                 >
-                    {isEditing ? 'Save Poll' : 'Create Poll'}
-                </Button>
-            </Grid2>
-            <Snackbar
-                open={!!error}
-                onClose={handleCloseSnackbar}
-                autoHideDuration={6000}
-                sx={{ justifyContent: 'center' }}
-            >
-                <Alert severity="error" variant="filled">
-                    {error}
-                </Alert>
-            </Snackbar>
+                    <Alert severity="error" variant="filled">
+                        {error}
+                    </Alert>
+                </Snackbar>
+            </Container>
         </>
     );
 }

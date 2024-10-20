@@ -1,13 +1,15 @@
 import React from 'react';
 import { AppBar, Toolbar, IconButton, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useRouter } from 'next/router';
 
 function PollToolbar({ barName }) {
+    const router = useRouter();
     const handleClickBackButton = () => {
-        window.history.back();
+        router.push('/home');
     };
     return (
-        <AppBar position="static">
+        <AppBar position="static" sx={{ backgroundColor: '#ff6200' }} m={0}>
             <Toolbar>
                 <IconButton
                     edge="start"

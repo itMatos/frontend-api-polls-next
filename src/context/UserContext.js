@@ -1,12 +1,12 @@
-'user clint';
+'user client';
 import React, { createContext, useState } from 'react';
 
 export const User_Data = createContext();
 
 function UserContext({ children }) {
-    const [userEmail, setUserEmail] = useState('userEmail teste');
-    const [userName, setUserName] = useState('userName teste');
-    const [userId, setUserId] = useState('userIDTeste');
+    const [userId, setUserId] = useState(null);
+    const [userName, setUserName] = useState(null);
+    const [userEmail, setUserEmail] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     return (
