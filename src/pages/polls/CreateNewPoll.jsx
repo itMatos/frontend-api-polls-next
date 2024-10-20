@@ -141,8 +141,8 @@ export default function PollMaker({
 
     const handleCreatePoll = async () => {
         const payload = {
-            title,
-            description,
+            title: title,
+            description: description,
             mult_choice: multChoice,
             answer_options: options,
         };

@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import {
     Avatar,
     Button,
@@ -11,27 +11,11 @@ import {
     Typography,
 } from '@mui/material';
 import { useRouter } from 'next/router';
+import { User_Data } from '../../context/UserContext';
 
-export default function NewPoll({ userId, name }) {
-    const [clickNewPoll, setClickNewPoll] = useState(false);
+export default function NewPoll() {
     const router = useRouter();
-
-    useEffect(() => {
-        const handleNavigation = async () => {
-            if (clickNewPoll) {
-                await router.push({
-                    pathname: '/polls',
-                    query: {
-                        userId: userId,
-                        name: name,
-                        isEditing: false,
-                        pollId: null,
-                    },
-                });
-            }
-        };
-        handleNavigation();
-    }, [clickNewPoll, router, userId, name]);
+    const { userName } = useContext(User_Data);
 
     return (
         <Grid2 container justifyContent="center" sx={{ my: 4 }}>
@@ -40,7 +24,7 @@ export default function NewPoll({ userId, name }) {
                     <CardHeader
                         avatar={
                             <Avatar sx={{ bgcolor: 'red' }} aria-label="recipe">
-                                {name ? name[0] : 'U'}
+                                {userName ? userName[0] : 'U'}
                             </Avatar>
                         }
                         title={
@@ -64,7 +48,7 @@ export default function NewPoll({ userId, name }) {
                         <Button
                             variant="contained"
                             color="primary"
-                            onClick={() => setClickNewPoll(true)}
+                            onClick={() => router.push('/polls')}
                         >
                             Create New Poll
                         </Button>

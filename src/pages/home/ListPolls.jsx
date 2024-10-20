@@ -1,7 +1,7 @@
 'use client';
 
-import * as React from 'react';
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { useState, useEffect, useContext } from 'react';
 import {
     Avatar,
     Box,
@@ -24,9 +24,11 @@ import DeleteConfirmationModal from './DeleteConfirmationModal';
 import { useRouter } from 'next/router';
 import PollVoting from './PollVoting';
 import PollIcon from '@mui/icons-material/Poll';
+import { User_Data } from '../../context/UserContext';
 
 // eslint-disable-next-line no-unused-vars
-export default function ListPolls({ userId, name }) {
+export default function ListPolls() {
+    const { userId } = useContext(User_Data);
     const [polls, setPolls] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
