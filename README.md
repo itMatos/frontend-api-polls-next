@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Descrição
+Este é o frontend de uma aplicação de enquetes desenvolvida em Next.js, onde os usuários podem visualizar, criar, editar e excluir enquetes. O projeto foi criado com foco em oferecer uma interface simples, intuitiva e responsiva.
 
-## Getting Started
-
-First, run the development server:
-
+## Para executar o projeto
+###  Clone
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git@github.com:itMatos/frontend-beuni-polls.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Instale as dependências
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Execute o projeto
 
-## Learn More
+```bash
+# development
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Principais Funcionalidades
+### Autenticação com Google OAuth
+- Usuários podem se cadastrar e fazer login utilizando a sua conta do Google.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Criação de Enquetes
+- Os usuários podem criar enquetes com múltiplas opções de resposta.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Edição e Exclusão
+- Os usuários podem editar ou excluir enquetes.
+### Votação
+- Usuários podem votar nas enquetes disponíveis.
 
-## Deploy on Vercel
+## Tecnologias Utilizadas
+- #### Next.js
+- #### Javascript
+- #### CSS/Material UI
+- #### Axios ou Fetch API
+- #### Hooks API
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+src/
+├── app/
+├── services/
+├── auth/
+├── pages/
+│   ├── home/
+│   ├── polls/
+│   ├── index.jsx
+├── .env.local
+└── package.json       
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Rotas Principais
+`/` – Página de login.
+`/home` – Página inicial listando as enquetes disponíveis
+`/polls/` – Página para criar uma nova enquete.
+`/polls/:id` – Página de detalhes e edição de enquete
+
+## Requisições para o Backend
+A comunicação com o backend é feita através do Axios, e os serviços estão centralizados na pasta `services/`, onde você pode encontrar funções como createPoll, getPolls, entre outros endpoints.
+
