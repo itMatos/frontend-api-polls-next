@@ -8,11 +8,11 @@ import { UserProvider } from '../../context/UserContext';
 export default function Login() {
     return (
         <UserProvider>
-            <GoogleOAuthProvider
+            {/* <GoogleOAuthProvider
                 clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
-            >
-                <LoginPage />
-            </GoogleOAuthProvider>
+            > */}
+            <LoginPage />
+            {/* </GoogleOAuthProvider> */}
         </UserProvider>
     );
 }
