@@ -39,18 +39,6 @@ npm run dev
 - #### Axios ou Fetch API
 - #### Hooks API
 
-src/
-├── app/
-├── services/
-├── auth/
-├── pages/
-│   ├── home/
-│   ├── polls/
-│   ├── index.jsx
-├── .env.local
-└── package.json       
-
-
 ## Rotas Principais
 `/` – Página de login.
 `/home` – Página inicial listando as enquetes disponíveis
