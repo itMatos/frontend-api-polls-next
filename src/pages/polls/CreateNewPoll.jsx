@@ -9,7 +9,7 @@ import {
     Typography,
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
-import * as ApiPolls from './../../app/services/BeuniPollsApi';
+import * as ApiPolls from './../../app/services/SurveyProPollsApi';
 import { useRouter } from 'next/router';
 import PollToolbar from './PollToolbar';
 import PollForm from './PollForm';

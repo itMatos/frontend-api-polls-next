@@ -5,7 +5,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 import axios from 'axios';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useRouter } from 'next/router';
-import * as ApiPolls from '../app/services/BeuniPollsApi';
+import * as ApiPolls from '../app/services/SurveyProPollsApi';
 import { User_Data } from '../context/UserContext';
 import brandImage from './../app/img/image.png';
 import Image from 'next/image';
@@ -106,7 +106,7 @@ function LoginPage() {
                     />
 
                     <Typography variant="h5" align="center" mt={2}>
-                        Welcome to Beuni Polls!
+                        Welcome to SurveyPro Polls!
                     </Typography>
                     <Box sx={{ mt: 2 }}>
                         <Button

@@ -17,7 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import getRandomColor from '../../app/colors/RandomColor';
 import EditIcon from '@mui/icons-material/Edit';
-import * as ApiPolls from '../../app/services/BeuniPollsApi';
+import * as ApiPolls from '../../app/services/SurveyProPollsApi';
 
 export default function CardPoll({
     poll,

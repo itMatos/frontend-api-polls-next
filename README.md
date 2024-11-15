@@ -4,7 +4,7 @@ Este é o frontend de uma aplicação de enquetes desenvolvida em Next.js, onde 
 ## Para executar o projeto
 ###  Clone
 ```bash
-git@github.com:itMatos/frontend-beuni-polls.git
+git@github.com:itMatos/frontend-SurveyPro-polls.git
 ```
 
 ### Instale as dependências

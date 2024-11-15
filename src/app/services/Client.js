@@ -1,6 +1,6 @@
 import axios from 'axios';
 import config from './config';
 
-export const BeuniPollsApiClient = axios.create({
+export const SurveyProPollsApiClient = axios.create({
     baseURL: config.pollsApi,
 });

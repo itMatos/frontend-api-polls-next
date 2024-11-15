@@ -3,7 +3,7 @@
 import React from 'react';
 import { useState, useEffect, useContext } from 'react';
 import { Box, Grid2, Paper, Typography } from '@mui/material';
-import * as ApiPolls from '../../app/services/BeuniPollsApi';
+import * as ApiPolls from '../../app/services/SurveyProPollsApi';
 import { useRouter } from 'next/router';
 import PollIcon from '@mui/icons-material/Poll';
 import { User_Data } from '../../context/UserContext';

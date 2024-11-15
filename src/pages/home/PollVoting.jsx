@@ -9,7 +9,7 @@ import {
     Checkbox,
     Grid2,
 } from '@mui/material';
-import * as ApiPolls from '../../app/services/BeuniPollsApi';
+import * as ApiPolls from '../../app/services/SurveyProPollsApi';
 import CheckIcon from '@mui/icons-material/Check';
 
 export default function PollVoting({

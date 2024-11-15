@@ -36,7 +36,7 @@ function HomePage() {
                         component="div"
                         sx={{ flexGrow: 1 }}
                     >
-                        Beuni Polls
+                        SurveyPro Polls
                     </Typography>
                     <IconButton color="inherit" onClick={() => handleLogOut()}>
                         <ExitToAppIcon />
@@ -49,7 +49,7 @@ function HomePage() {
                 align="center"
                 sx={{ mt: 4 }}
             >
-                Welcome to Beuni Polls, {userName}!
+                Welcome to SurveyPro Polls, {userName}!
             </Typography>
         </>
     );

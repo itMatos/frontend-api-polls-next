@@ -5,7 +5,7 @@
 // import axios from 'axios';
 // import { useGoogleLogin } from '@react-oauth/google';
 // import { useRouter } from 'next/router';
-// import * as ApiPolls from './../../app/services/BeuniPollsApi';
+// import * as ApiPolls from './../../app/services/SurveyProPollsApi';
 // import { User_Data } from './../';
 
 // const LoginPage = () => {
@@ -119,7 +119,7 @@
 //                         alignItems: 'center',
 //                     }}
 //                 >
-//                     <Typography variant="h5">Welcome to Beuni Polls</Typography>
+//                     <Typography variant="h5">Welcome to SurveyPro Polls</Typography>
 //                     <Box sx={{ mt: 2 }}>
 //                         <Button
 //                             fullWidth
